@@ -27,10 +27,22 @@ public class ReportsController : Controller
         }
         var end = to.AddDays(1);
 
-        var rows = await _context.Shipments
+        var shipments = await _context.Shipments
             .Where(s => s.CreatedDate >= from && s.CreatedDate < end
                         && s.Status != ShipmentStatus.Cancelled)
-            .GroupBy(s => s.TransportCompany == null ? "(Chưa chọn nhà xe)" : s.TransportCompany.Name)
+            .Select(s => new
+            {
+                CompanyName = s.TransportCompany == null ? "(Chưa chọn nhà xe)" : s.TransportCompany.Name,
+                s.Status,
+                s.ShippingFee,
+                s.CODAmount
+            })
+            .ToListAsync();
+
+        // Grouped in memory: a date range holds few rows for one office, and not
+        // every database provider supports SUM over decimal columns.
+        var rows = shipments
+            .GroupBy(s => s.CompanyName)
             .Select(g => new CodReportRow
             {
                 CompanyName = g.Key,
@@ -40,7 +52,7 @@ public class ReportsController : Controller
                 TotalCod = g.Sum(s => s.CODAmount)
             })
             .OrderBy(r => r.CompanyName)
-            .ToListAsync();
+            .ToList();
 
         var model = new CodReportViewModel
         {

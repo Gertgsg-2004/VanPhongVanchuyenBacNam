@@ -26,16 +26,18 @@ public class HomeController : Controller
         var todayShipments = _context.Shipments
             .Where(s => s.CreatedDate >= today && s.CreatedDate < tomorrow);
 
+        // Cancelled shipments don't count towards revenue. Amounts are summed in memory
+        // because not every database provider supports SUM over decimal columns.
+        var todayAmounts = await todayShipments
+            .Where(s => s.Status != ShipmentStatus.Cancelled)
+            .Select(s => new { s.ShippingFee, s.CODAmount })
+            .ToListAsync();
+
         var model = new DashboardViewModel
         {
             TodayCount = await todayShipments.CountAsync(),
-            // Cancelled shipments don't count towards revenue.
-            TodayShippingFee = await todayShipments
-                .Where(s => s.Status != ShipmentStatus.Cancelled)
-                .SumAsync(s => (decimal?)s.ShippingFee) ?? 0,
-            TodayCod = await todayShipments
-                .Where(s => s.Status != ShipmentStatus.Cancelled)
-                .SumAsync(s => (decimal?)s.CODAmount) ?? 0,
+            TodayShippingFee = todayAmounts.Sum(s => s.ShippingFee),
+            TodayCod = todayAmounts.Sum(s => s.CODAmount),
             DeliveredTodayCount = await _context.Shipments
                 .CountAsync(s => s.DeliveredDate >= today && s.DeliveredDate < tomorrow),
             UnpaidCount = await _context.Shipments
