@@ -209,7 +209,8 @@ public class ShipmentsController : Controller
             return NotFound();
         }
 
-        return View(shipment);
+        // A single label is just a one-item print job — reuse the PrintLabels view.
+        return View("PrintLabels", new List<Shipment> { shipment });
     }
 
     // GET: Shipments/PrintLabels?ids=1&ids=2 — print several labels at once.

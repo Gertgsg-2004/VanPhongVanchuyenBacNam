@@ -1,0 +1,50 @@
+@model VanPhongVanchuyenBacNam.Models.Shipment
+
+@* One 100x100mm shipping label. Styled by PrintLabels.cshtml. *@
+<div class="label">
+    <div class="label-header">
+        <span class="office-name">VP VẬN CHUYỂN BẮC NAM</span>
+        <span>Ngày gửi: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span>
+    </div>
+
+    <div class="barcode-wrap">
+        <svg class="barcode" data-code="@Model.TrackingCode"></svg>
+    </div>
+
+    <div class="section recipient">
+        <div class="small-caps">Người nhận</div>
+        <div class="recipient-name">@Model.RecipientName</div>
+        <div class="recipient-phone">&#9742; @Model.RecipientPhone</div>
+        <div>@Model.RecipientAddress</div>
+        <div class="province">@Model.RecipientProvince</div>
+    </div>
+
+    <div class="section">
+        <div>Người gửi: <strong>@Model.SenderName</strong> &mdash; @Model.SenderPhone</div>
+        <div>
+            Hàng hóa: @Model.GoodsDescription@(Model.Weight.HasValue ? $" ({Model.Weight} kg)" : "")
+        </div>
+    </div>
+
+    <div class="section footer">
+        @if (Model.CODAmount > 0)
+        {
+            <div class="cod-box">THU HỘ (COD): @Model.CODAmount.ToVnd()</div>
+        }
+        <div>
+            Cước: @Model.ShippingFee.ToVnd()
+            @if (Model.IsPaid)
+            {
+                <span>&mdash; đã thanh toán</span>
+            }
+            else
+            {
+                <strong>&mdash; CHƯA THANH TOÁN</strong>
+            }
+        </div>
+        @if (Model.TransportCompany != null)
+        {
+            <div>Nhà xe: <strong>@Model.TransportCompany.Name</strong> &mdash; @Model.TransportCompany.PhoneNumber</div>
+        }
+    </div>
+</div>

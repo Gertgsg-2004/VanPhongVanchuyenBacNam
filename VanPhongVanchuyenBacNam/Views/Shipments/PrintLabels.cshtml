@@ -1,0 +1,141 @@
+@model List<VanPhongVanchuyenBacNam.Models.Shipment>
+
+@{
+    // Standalone print page: no site layout, no Bootstrap — only what the label needs.
+    Layout = null;
+    var title = Model.Count == 1 ? $"Nhãn {Model[0].TrackingCode}" : $"In {Model.Count} nhãn";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@title</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f0f0;
+        }
+
+        .label {
+            width: 100mm;
+            height: 100mm;
+            padding: 3mm;
+            background: #fff;
+            font-size: 9pt;
+            line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .label-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 7pt;
+            border-bottom: 1px solid #000;
+            padding-bottom: 1mm;
+        }
+
+        .office-name { font-weight: bold; }
+
+        .barcode-wrap { text-align: center; padding: 1mm 0; }
+
+        .section {
+            border-top: 1px dashed #777;
+            padding: 1.2mm 0;
+        }
+
+        .small-caps {
+            font-size: 7pt;
+            text-transform: uppercase;
+            color: #333;
+        }
+
+        .recipient-name {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .recipient-phone { font-size: 12pt; font-weight: bold; }
+
+        .province {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .footer { margin-top: auto; }
+
+        .cod-box {
+            display: inline-block;
+            border: 2px solid #000;
+            padding: 0.8mm 2mm;
+            font-size: 11.5pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+        }
+
+        .toolbar {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .toolbar button {
+            padding: 8px 20px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* Screen preview: dashed outline + spacing between labels. */
+        @@media screen {
+            .label {
+                margin: 10px auto;
+                border: 1px dashed #999;
+            }
+        }
+
+        @@media print {
+            .toolbar { display: none; }
+            body { background: #fff; }
+
+            @@page {
+                size: 100mm 100mm;
+                margin: 0;
+            }
+
+            .label { page-break-after: always; }
+            .label:last-child { page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button type="button" onclick="window.print()">&#128424; In nhãn</button>
+        <button type="button" onclick="window.close()">Đóng</button>
+    </div>
+
+    @foreach (var shipment in Model)
+    {
+        <partial name="_LabelContent" model="shipment" />
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script>
+        // Render a CODE128 barcode from each label's tracking code, then open the print dialog.
+        document.querySelectorAll("svg.barcode").forEach(function (svg) {
+            JsBarcode(svg, svg.dataset.code, {
+                format: "CODE128",
+                width: 1.6,
+                height: 34,
+                displayValue: true,
+                fontSize: 13,
+                margin: 0
+            });
+        });
+        window.addEventListener("load", function () { window.print(); });
+    </script>
+</body>
+</html>
