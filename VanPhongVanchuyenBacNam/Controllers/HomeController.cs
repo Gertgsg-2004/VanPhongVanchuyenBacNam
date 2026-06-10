@@ -1,21 +1,56 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VanPhongVanchuyenBacNam.Data;
 using VanPhongVanchuyenBacNam.Models;
+using VanPhongVanchuyenBacNam.Models.ViewModels;
 
 namespace VanPhongVanchuyenBacNam.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly AppDbContext _context;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(AppDbContext context)
     {
-        _logger = logger;
+        _context = context;
     }
 
-    public IActionResult Index()
+    // Dashboard: today's totals, pipeline by status, latest shipments.
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var today = DateTime.Today;
+        var tomorrow = today.AddDays(1);
+
+        var todayShipments = _context.Shipments
+            .Where(s => s.CreatedDate >= today && s.CreatedDate < tomorrow);
+
+        var model = new DashboardViewModel
+        {
+            TodayCount = await todayShipments.CountAsync(),
+            // Cancelled shipments don't count towards revenue.
+            TodayShippingFee = await todayShipments
+                .Where(s => s.Status != ShipmentStatus.Cancelled)
+                .SumAsync(s => (decimal?)s.ShippingFee) ?? 0,
+            TodayCod = await todayShipments
+                .Where(s => s.Status != ShipmentStatus.Cancelled)
+                .SumAsync(s => (decimal?)s.CODAmount) ?? 0,
+            DeliveredTodayCount = await _context.Shipments
+                .CountAsync(s => s.DeliveredDate >= today && s.DeliveredDate < tomorrow),
+            UnpaidCount = await _context.Shipments
+                .CountAsync(s => !s.IsPaid && s.Status != ShipmentStatus.Cancelled),
+            StatusCounts = await _context.Shipments
+                .GroupBy(s => s.Status)
+                .Select(g => new { g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Key, x => x.Count),
+            RecentShipments = await _context.Shipments
+                .Include(s => s.TransportCompany)
+                .OrderByDescending(s => s.CreatedDate)
+                .Take(5)
+                .ToListAsync()
+        };
+
+        return View(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
