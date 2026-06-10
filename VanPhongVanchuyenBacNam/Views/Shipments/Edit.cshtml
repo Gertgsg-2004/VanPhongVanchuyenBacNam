@@ -1,0 +1,25 @@
+@model VanPhongVanchuyenBacNam.Models.Shipment
+
+@{
+    ViewData["Title"] = "Sửa vận đơn";
+}
+
+<h1 class="h3">
+    Sửa vận đơn <span class="font-monospace text-primary">@Model.TrackingCode</span>
+</h1>
+<hr />
+
+<div class="row">
+    <div class="col-lg-9">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="Id" />
+            <partial name="_FormFields" />
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

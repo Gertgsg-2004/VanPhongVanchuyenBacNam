@@ -1,5 +1,11 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using VanPhongVanchuyenBacNam.Data;
+
+// Pin one fixed culture so decimal input ("2.5") parses the same on every machine,
+// no matter the Windows locale. VND display formatting is handled by ToVnd().
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 

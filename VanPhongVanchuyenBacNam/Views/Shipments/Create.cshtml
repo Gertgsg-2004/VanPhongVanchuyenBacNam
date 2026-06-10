@@ -1,0 +1,23 @@
+@model VanPhongVanchuyenBacNam.Models.Shipment
+
+@{
+    ViewData["Title"] = "Tạo vận đơn";
+}
+
+<h1 class="h3">Tạo vận đơn mới</h1>
+<p class="text-muted">Mã vận đơn sẽ được hệ thống tự sinh khi lưu.</p>
+<hr />
+
+<div class="row">
+    <div class="col-lg-9">
+        <form asp-action="Create">
+            <partial name="_FormFields" />
+            <button type="submit" class="btn btn-primary">Tạo vận đơn</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

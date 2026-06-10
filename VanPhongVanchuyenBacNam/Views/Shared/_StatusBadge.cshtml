@@ -1,0 +1,13 @@
+@model ShipmentStatus
+
+@{
+    var badgeClass = Model switch
+    {
+        ShipmentStatus.Received => "bg-info text-dark",
+        ShipmentStatus.InTransit => "bg-warning text-dark",
+        ShipmentStatus.Delivered => "bg-success",
+        ShipmentStatus.Cancelled => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
+}
+<span class="badge @badgeClass">@Model.GetDisplayName()</span>

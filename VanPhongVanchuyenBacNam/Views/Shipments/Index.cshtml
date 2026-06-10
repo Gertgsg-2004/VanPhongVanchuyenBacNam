@@ -1,0 +1,128 @@
+@model IEnumerable<VanPhongVanchuyenBacNam.Models.Shipment>
+
+@{
+    ViewData["Title"] = "Vận đơn";
+    var provinces = (List<string>)ViewBag.Provinces;
+    var selectedProvince = (string?)ViewBag.SelectedProvince;
+    var selectedStatus = (ShipmentStatus?)ViewBag.SelectedStatus;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Vận đơn</h1>
+    <a asp-action="Create" class="btn btn-primary">+ Tạo vận đơn</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-sm-4 col-lg-3">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control"
+               placeholder="Mã vận đơn, tên hoặc SĐT..." aria-label="Tra cứu vận đơn" />
+    </div>
+    <div class="col-sm-3 col-lg-2">
+        <select name="province" class="form-select" aria-label="Lọc theo tỉnh nhận">
+            <option value="">— Tỉnh nhận —</option>
+            @foreach (var province in provinces)
+            {
+                <option value="@province" selected="@(province == selectedProvince)">@province</option>
+            }
+        </select>
+    </div>
+    <div class="col-sm-3 col-lg-2">
+        <select name="status" class="form-select" aria-label="Lọc theo trạng thái">
+            <option value="">— Trạng thái —</option>
+            @foreach (ShipmentStatus status in Enum.GetValues<ShipmentStatus>())
+            {
+                <option value="@status" selected="@(status == selectedStatus)">@status.GetDisplayName()</option>
+            }
+        </select>
+    </div>
+    <div class="col-sm-2 col-lg-3">
+        <button type="submit" class="btn btn-outline-primary">Lọc</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Không tìm thấy vận đơn nào. <a asp-action="Create" class="alert-link">Tạo vận đơn mới</a>.
+    </div>
+}
+else
+{
+    <form method="get" asp-action="PrintLabels" target="_blank">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 1%"></th>
+                        <th>Mã vận đơn</th>
+                        <th>Người nhận</th>
+                        <th>Tỉnh nhận</th>
+                        <th>Nhà xe</th>
+                        <th class="text-end">Cước</th>
+                        <th class="text-end">COD</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var shipment in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="ids" value="@shipment.Id" class="form-check-input"
+                                       aria-label="Chọn vận đơn @shipment.TrackingCode" />
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@shipment.Id" class="font-monospace fw-semibold text-decoration-none">
+                                    @shipment.TrackingCode
+                                </a>
+                                <br />
+                                <small class="text-muted">@shipment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small>
+                            </td>
+                            <td>
+                                @shipment.RecipientName
+                                <br />
+                                <small class="text-muted">@shipment.RecipientPhone</small>
+                            </td>
+                            <td>@shipment.RecipientProvince</td>
+                            <td>@shipment.TransportCompany?.Name</td>
+                            <td class="text-end">
+                                @shipment.ShippingFee.ToVnd()
+                                <br />
+                                @if (shipment.IsPaid)
+                                {
+                                    <small class="badge bg-success-subtle text-success border">Đã thu cước</small>
+                                }
+                                else
+                                {
+                                    <small class="badge bg-danger-subtle text-danger border">Chưa thu cước</small>
+                                }
+                            </td>
+                            <td class="text-end">
+                                @if (shipment.CODAmount > 0)
+                                {
+                                    <span class="fw-semibold text-danger">@shipment.CODAmount.ToVnd()</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td><partial name="_StatusBadge" model="shipment.Status" /></td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@shipment.Id" class="btn btn-sm btn-outline-secondary">Chi tiết</a>
+                                <a asp-action="Edit" asp-route-id="@shipment.Id" class="btn btn-sm btn-outline-primary">Sửa</a>
+                                <a asp-action="PrintLabel" asp-route-id="@shipment.Id" target="_blank" class="btn btn-sm btn-outline-dark">In nhãn</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <button type="submit" class="btn btn-outline-dark">&#128424; In nhãn các đơn đã chọn</button>
+            <span class="text-muted small">Tổng cộng: @Model.Count() vận đơn</span>
+        </div>
+    </form>
+}

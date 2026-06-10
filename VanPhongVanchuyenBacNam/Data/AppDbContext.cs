@@ -11,9 +11,29 @@ public class AppDbContext : DbContext
 
     public DbSet<TransportCompany> TransportCompanies => Set<TransportCompany>();
 
+    public DbSet<Shipment> Shipments => Set<Shipment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Shipment>(entity =>
+        {
+            // Tracking codes must never repeat; the unique index is the safety net
+            // even if the generator ever produced a duplicate.
+            entity.HasIndex(s => s.TrackingCode).IsUnique();
+
+            // VND amounts are whole numbers; weight keeps 2 decimals (kg).
+            entity.Property(s => s.ShippingFee).HasColumnType("decimal(18,0)");
+            entity.Property(s => s.CODAmount).HasColumnType("decimal(18,0)");
+            entity.Property(s => s.Weight).HasColumnType("decimal(8,2)");
+
+            // Deleting a transport company must not delete its shipments.
+            entity.HasOne(s => s.TransportCompany)
+                .WithMany()
+                .HasForeignKey(s => s.TransportCompanyId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
 
         // Seed sample companies so the app has data right after the first Update-Database.
         modelBuilder.Entity<TransportCompany>().HasData(

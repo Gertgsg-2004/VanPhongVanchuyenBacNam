@@ -1,0 +1,104 @@
+@model VanPhongVanchuyenBacNam.Models.Shipment
+
+@* Shared form fields for shipment Create and Edit. *@
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<h2 class="h6 text-uppercase text-muted border-bottom pb-1 mt-2">Người gửi</h2>
+<div class="row">
+    <div class="col-md-7 mb-3">
+        <label asp-for="SenderName" class="form-label"></label>
+        <input asp-for="SenderName" class="form-control" />
+        <span asp-validation-for="SenderName" class="text-danger"></span>
+    </div>
+    <div class="col-md-5 mb-3">
+        <label asp-for="SenderPhone" class="form-label"></label>
+        <input asp-for="SenderPhone" class="form-control" />
+        <span asp-validation-for="SenderPhone" class="text-danger"></span>
+    </div>
+</div>
+<div class="mb-3">
+    <label asp-for="SenderAddress" class="form-label"></label>
+    <input asp-for="SenderAddress" class="form-control" />
+    <span asp-validation-for="SenderAddress" class="text-danger"></span>
+</div>
+
+<h2 class="h6 text-uppercase text-muted border-bottom pb-1 mt-2">Người nhận</h2>
+<div class="row">
+    <div class="col-md-7 mb-3">
+        <label asp-for="RecipientName" class="form-label"></label>
+        <input asp-for="RecipientName" class="form-control" />
+        <span asp-validation-for="RecipientName" class="text-danger"></span>
+    </div>
+    <div class="col-md-5 mb-3">
+        <label asp-for="RecipientPhone" class="form-label"></label>
+        <input asp-for="RecipientPhone" class="form-control" />
+        <span asp-validation-for="RecipientPhone" class="text-danger"></span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 mb-3">
+        <label asp-for="RecipientAddress" class="form-label"></label>
+        <input asp-for="RecipientAddress" class="form-control" />
+        <span asp-validation-for="RecipientAddress" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="RecipientProvince" class="form-label"></label>
+        <input asp-for="RecipientProvince" class="form-control" list="provinceSuggestions" placeholder="VD: Nghệ An" />
+        <datalist id="provinceSuggestions">
+            @foreach (var province in (List<string>)ViewBag.ProvinceSuggestions)
+            {
+                <option value="@province"></option>
+            }
+        </datalist>
+        <span asp-validation-for="RecipientProvince" class="text-danger"></span>
+    </div>
+</div>
+
+<h2 class="h6 text-uppercase text-muted border-bottom pb-1 mt-2">Hàng hóa &amp; cước phí</h2>
+<div class="mb-3">
+    <label asp-for="GoodsDescription" class="form-label"></label>
+    <input asp-for="GoodsDescription" class="form-control" placeholder="VD: 1 thùng quần áo" />
+    <span asp-validation-for="GoodsDescription" class="text-danger"></span>
+</div>
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <label asp-for="Weight" class="form-label"></label>
+        <input asp-for="Weight" type="number" step="0.01" min="0" class="form-control" />
+        <span asp-validation-for="Weight" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="ShippingFee" class="form-label"></label>
+        <input asp-for="ShippingFee" type="number" step="1" min="0" class="form-control" />
+        <span asp-validation-for="ShippingFee" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="CODAmount" class="form-label"></label>
+        <input asp-for="CODAmount" type="number" step="1" min="0" class="form-control" />
+        <span asp-validation-for="CODAmount" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-check mb-3">
+    <input asp-for="IsPaid" class="form-check-input" />
+    <label asp-for="IsPaid" class="form-check-label"></label>
+</div>
+
+<h2 class="h6 text-uppercase text-muted border-bottom pb-1 mt-2">Vận chuyển</h2>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="TransportCompanyId" class="form-label"></label>
+        <select asp-for="TransportCompanyId" asp-items="ViewBag.Companies" class="form-select">
+            <option value="">— Chưa chọn nhà xe —</option>
+        </select>
+        <span asp-validation-for="TransportCompanyId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<ShipmentStatus>()" class="form-select"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+</div>
+<div class="mb-3">
+    <label asp-for="Note" class="form-label"></label>
+    <textarea asp-for="Note" class="form-control" rows="2"></textarea>
+    <span asp-validation-for="Note" class="text-danger"></span>
+</div>

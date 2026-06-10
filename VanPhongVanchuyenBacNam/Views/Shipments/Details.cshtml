@@ -1,0 +1,142 @@
+@model VanPhongVanchuyenBacNam.Models.Shipment
+
+@{
+    ViewData["Title"] = "Vận đơn " + Model.TrackingCode;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">
+        Vận đơn <span class="font-monospace text-primary">@Model.TrackingCode</span>
+        <partial name="_StatusBadge" model="Model.Status" />
+    </h1>
+    <div>
+        <a asp-action="PrintLabel" asp-route-id="@Model.Id" target="_blank" class="btn btn-dark">&#128424; In nhãn</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Sửa</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+    </div>
+</div>
+
+@* Quick status actions depending on the current status. *@
+@if (Model.Status != ShipmentStatus.Delivered && Model.Status != ShipmentStatus.Cancelled)
+{
+    <div class="d-flex gap-2 mb-3">
+        @if (Model.Status == ShipmentStatus.Received)
+        {
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post">
+                <input type="hidden" name="status" value="@ShipmentStatus.InTransit" />
+                <button type="submit" class="btn btn-warning">&#9654; Bắt đầu vận chuyển</button>
+            </form>
+        }
+        @if (Model.Status == ShipmentStatus.InTransit)
+        {
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post">
+                <input type="hidden" name="status" value="@ShipmentStatus.Delivered" />
+                <button type="submit" class="btn btn-success">&#10003; Đã giao hàng</button>
+            </form>
+        }
+        <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post"
+              onsubmit="return confirm('Hủy vận đơn này?');">
+            <input type="hidden" name="status" value="@ShipmentStatus.Cancelled" />
+            <button type="submit" class="btn btn-outline-danger">Hủy đơn</button>
+        </form>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Người gửi</div>
+            <div class="card-body">
+                <p class="mb-1 fw-semibold">@Model.SenderName</p>
+                <p class="mb-1"><a href="tel:@Model.SenderPhone">@Model.SenderPhone</a></p>
+                <p class="mb-0 text-muted">@Model.SenderAddress</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Người nhận</div>
+            <div class="card-body">
+                <p class="mb-1 fw-semibold">@Model.RecipientName</p>
+                <p class="mb-1"><a href="tel:@Model.RecipientPhone">@Model.RecipientPhone</a></p>
+                <p class="mb-0">@Model.RecipientAddress, <strong>@Model.RecipientProvince</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Hàng hóa &amp; cước phí</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">@Html.DisplayNameFor(m => m.GoodsDescription)</dt>
+                    <dd class="col-7">@Model.GoodsDescription</dd>
+
+                    <dt class="col-5">@Html.DisplayNameFor(m => m.Weight)</dt>
+                    <dd class="col-7">@(Model.Weight.HasValue ? $"{Model.Weight} kg" : "—")</dd>
+
+                    <dt class="col-5">@Html.DisplayNameFor(m => m.ShippingFee)</dt>
+                    <dd class="col-7">
+                        @Model.ShippingFee.ToVnd()
+                        @if (Model.IsPaid)
+                        {
+                            <span class="badge bg-success-subtle text-success border">Đã thu</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger-subtle text-danger border">Chưa thu</span>
+                        }
+                    </dd>
+
+                    <dt class="col-5">Thu hộ (COD)</dt>
+                    <dd class="col-7">
+                        @if (Model.CODAmount > 0)
+                        {
+                            <span class="fw-bold text-danger">@Model.CODAmount.ToVnd()</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không thu hộ</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Vận chuyển</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">@Html.DisplayNameFor(m => m.TransportCompany)</dt>
+                    <dd class="col-7">
+                        @if (Model.TransportCompany != null)
+                        {
+                            @Model.TransportCompany.Name
+                            <br />
+                            <a href="tel:@Model.TransportCompany.PhoneNumber">@Model.TransportCompany.PhoneNumber</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Chưa chọn</span>
+                        }
+                    </dd>
+
+                    <dt class="col-5">@Html.DisplayNameFor(m => m.CreatedDate)</dt>
+                    <dd class="col-7">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                    <dt class="col-5">@Html.DisplayNameFor(m => m.DeliveredDate)</dt>
+                    <dd class="col-7">@(Model.DeliveredDate?.ToString("dd/MM/yyyy HH:mm") ?? "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Note))
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header fw-semibold">Ghi chú</div>
+                <div class="card-body" style="white-space: pre-line">@Model.Note</div>
+            </div>
+        </div>
+    }
+</div>
