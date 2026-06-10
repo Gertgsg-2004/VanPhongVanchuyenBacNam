@@ -1,0 +1,24 @@
+@model VanPhongVanchuyenBacNam.Models.Customer
+
+@{
+    ViewData["Title"] = "Sửa khách hàng";
+}
+
+<h1 class="h3">Sửa khách gửi quen</h1>
+<hr />
+
+<div class="row">
+    <div class="col-lg-7">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <partial name="_FormFields" />
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

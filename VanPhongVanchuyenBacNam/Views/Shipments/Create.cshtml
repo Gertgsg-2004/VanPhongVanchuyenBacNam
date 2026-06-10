@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Tạo vận đơn";
+    var customers = (List<Customer>)ViewBag.CustomerList;
 }
 
 <h1 class="h3">Tạo vận đơn mới</h1>
@@ -10,8 +11,28 @@
 
 <div class="row">
     <div class="col-lg-9">
+        @if (customers.Any())
+        {
+            <div class="mb-3">
+                <label class="form-label" for="customerSelect">Chọn khách gửi quen (tự điền thông tin người gửi)</label>
+                <select id="customerSelect" class="form-select">
+                    <option value="">— Khách mới / tự nhập —</option>
+                    @foreach (var customer in customers)
+                    {
+                        <option data-name="@customer.Name" data-phone="@customer.Phone" data-address="@customer.Address">
+                            @customer.Name — @customer.Phone
+                        </option>
+                    }
+                </select>
+            </div>
+        }
+
         <form asp-action="Create">
             <partial name="_FormFields" />
+            <div class="form-check mb-3">
+                <input type="checkbox" id="saveAsCustomer" name="saveAsCustomer" value="true" class="form-check-input" />
+                <label for="saveAsCustomer" class="form-check-label">Lưu người gửi vào danh sách khách quen</label>
+            </div>
             <button type="submit" class="btn btn-primary">Tạo vận đơn</button>
             <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
         </form>
@@ -20,4 +41,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Fill the sender fields from the selected saved customer.
+        var customerSelect = document.getElementById("customerSelect");
+        if (customerSelect) {
+            customerSelect.addEventListener("change", function () {
+                var option = this.selectedOptions[0];
+                if (!option || !option.dataset.phone) {
+                    return;
+                }
+                document.getElementById("SenderName").value = option.dataset.name;
+                document.getElementById("SenderPhone").value = option.dataset.phone;
+                document.getElementById("SenderAddress").value = option.dataset.address || "";
+            });
+        }
+    </script>
 }

@@ -1,0 +1,64 @@
+@model VanPhongVanchuyenBacNam.Models.ViewModels.CodReportViewModel
+
+@{
+    ViewData["Title"] = "Đối soát COD";
+}
+
+<h1 class="h3 mb-1">Đối soát COD theo nhà xe</h1>
+<p class="text-muted">Tổng hợp cước phí và tiền thu hộ theo từng nhà xe (không tính đơn đã hủy).</p>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-sm-4 col-lg-3">
+        <label class="form-label" for="fromDate">Từ ngày</label>
+        <input type="date" id="fromDate" name="fromDate" value="@Model.FromDate.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-sm-4 col-lg-3">
+        <label class="form-label" for="toDate">Đến ngày</label>
+        <input type="date" id="toDate" name="toDate" value="@Model.ToDate.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-sm-4 col-lg-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Xem báo cáo</button>
+    </div>
+</form>
+
+@if (!Model.Rows.Any())
+{
+    <div class="alert alert-info">Không có vận đơn nào trong khoảng thời gian này.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nhà xe</th>
+                    <th class="text-end">Số đơn</th>
+                    <th class="text-end">Đã giao</th>
+                    <th class="text-end">Tổng cước</th>
+                    <th class="text-end">Tổng COD phải thu</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td class="fw-semibold">@row.CompanyName</td>
+                        <td class="text-end">@row.ShipmentCount</td>
+                        <td class="text-end">@row.DeliveredCount</td>
+                        <td class="text-end">@row.TotalFee.ToVnd()</td>
+                        <td class="text-end fw-semibold text-danger">@row.TotalCod.ToVnd()</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td>Tổng cộng</td>
+                    <td class="text-end">@Model.Rows.Sum(r => r.ShipmentCount)</td>
+                    <td class="text-end">@Model.Rows.Sum(r => r.DeliveredCount)</td>
+                    <td class="text-end">@Model.Rows.Sum(r => r.TotalFee).ToVnd()</td>
+                    <td class="text-end text-danger">@Model.Rows.Sum(r => r.TotalCod).ToVnd()</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}

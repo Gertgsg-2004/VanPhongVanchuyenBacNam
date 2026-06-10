@@ -79,17 +79,30 @@ public class ShipmentsController : Controller
         return View(shipment);
     }
 
-    // GET: Shipments/Create
-    public async Task<IActionResult> Create()
+    // GET: Shipments/Create — customerId pre-fills the sender from a saved customer.
+    public async Task<IActionResult> Create(int? customerId)
     {
         await LoadFormDataAsync();
-        return View(new Shipment());
+
+        var shipment = new Shipment();
+        if (customerId.HasValue)
+        {
+            var customer = await _context.Customers.FindAsync(customerId.Value);
+            if (customer != null)
+            {
+                shipment.SenderName = customer.Name;
+                shipment.SenderPhone = customer.Phone;
+                shipment.SenderAddress = customer.Address;
+            }
+        }
+
+        return View(shipment);
     }
 
     // POST: Shipments/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Shipment shipment)
+    public async Task<IActionResult> Create(Shipment shipment, bool saveAsCustomer = false)
     {
         if (!ModelState.IsValid)
         {
@@ -105,6 +118,21 @@ public class ShipmentsController : Controller
         await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = $"Đã tạo vận đơn {shipment.TrackingCode}.";
+
+        // Optionally remember the sender for next time (skip if the phone already exists).
+        if (saveAsCustomer &&
+            !await _context.Customers.AnyAsync(c => c.Phone == shipment.SenderPhone))
+        {
+            _context.Customers.Add(new Customer
+            {
+                Name = shipment.SenderName,
+                Phone = shipment.SenderPhone,
+                Address = shipment.SenderAddress
+            });
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] += " Người gửi đã được lưu vào danh sách khách quen.";
+        }
+
         return RedirectToAction(nameof(Details), new { id = shipment.Id });
     }
 
@@ -275,6 +303,11 @@ public class ShipmentsController : Controller
         ViewBag.ProvinceSuggestions = await companyProvinces
             .Union(shipmentProvinces)
             .OrderBy(p => p)
+            .ToListAsync();
+
+        // Saved customers feed the sender autofill dropdown on the create form.
+        ViewBag.CustomerList = await _context.Customers
+            .OrderBy(c => c.Name)
             .ToListAsync();
     }
 }

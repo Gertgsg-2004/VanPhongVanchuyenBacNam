@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                &#128100; @User.Identity!.Name
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="dropdown-item">Đăng xuất</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+        </li>
+    }
+</ul>

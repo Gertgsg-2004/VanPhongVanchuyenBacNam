@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VanPhongVanchuyenBacNam.Models;
 
 namespace VanPhongVanchuyenBacNam.Data;
 
-public class AppDbContext : DbContext
+// IdentityDbContext adds the user/role tables for admin login on top of our own entities.
+public class AppDbContext : IdentityDbContext<IdentityUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -13,9 +16,16 @@ public class AppDbContext : DbContext
 
     public DbSet<Shipment> Shipments => Set<Shipment>();
 
+    public DbSet<Customer> Customers => Set<Customer>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // One saved customer per phone number, so autofill is never ambiguous.
+        modelBuilder.Entity<Customer>()
+            .HasIndex(c => c.Phone)
+            .IsUnique();
 
         modelBuilder.Entity<Shipment>(entity =>
         {

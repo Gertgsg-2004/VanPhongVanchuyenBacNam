@@ -1,0 +1,28 @@
+@model VanPhongVanchuyenBacNam.Models.Customer
+
+@{
+    ViewData["Title"] = "Xóa khách hàng";
+}
+
+<h1 class="h3">Xóa khách gửi quen</h1>
+
+<div class="alert alert-warning">
+    Bạn có chắc muốn xóa khách hàng này? Các vận đơn đã tạo sẽ không bị ảnh hưởng.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+    <dd class="col-sm-9 fw-semibold">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Phone)</dt>
+    <dd class="col-sm-9">@Model.Phone</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Address)</dt>
+    <dd class="col-sm-9">@Model.Address</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+</form>
