@@ -1,0 +1,51 @@
+@model VanPhongVanchuyenBacNam.Models.TransportCompany
+
+@{
+    ViewData["Title"] = "Chi tiết nhà xe";
+}
+
+<h1 class="h3">Chi tiết nhà xe</h1>
+<hr />
+
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+    <dd class="col-sm-9 fw-semibold">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Province)</dt>
+    <dd class="col-sm-9">@Model.Province</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PhoneNumber)</dt>
+    <dd class="col-sm-9"><a href="tel:@Model.PhoneNumber">@Model.PhoneNumber</a></dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.BackupPhone)</dt>
+    <dd class="col-sm-9">
+        @if (!string.IsNullOrEmpty(Model.BackupPhone))
+        {
+            <a href="tel:@Model.BackupPhone">@Model.BackupPhone</a>
+        }
+    </dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Address)</dt>
+    <dd class="col-sm-9">@Model.Address</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ContactPerson)</dt>
+    <dd class="col-sm-9">@Model.ContactPerson</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Note)</dt>
+    <dd class="col-sm-9" style="white-space: pre-line">@Model.Note</dd>
+
+    <dt class="col-sm-3">Trạng thái</dt>
+    <dd class="col-sm-9">
+        @if (Model.IsActive)
+        {
+            <span class="badge bg-success">Đang hợp tác</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Ngừng hợp tác</span>
+        }
+    </dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Sửa</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>

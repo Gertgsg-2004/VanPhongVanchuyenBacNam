@@ -1,0 +1,22 @@
+@model VanPhongVanchuyenBacNam.Models.TransportCompany
+
+@{
+    ViewData["Title"] = "Thêm nhà xe";
+}
+
+<h1 class="h3">Thêm nhà xe</h1>
+<hr />
+
+<div class="row">
+    <div class="col-lg-8">
+        <form asp-action="Create">
+            <partial name="_FormFields" />
+            <button type="submit" class="btn btn-primary">Lưu nhà xe</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

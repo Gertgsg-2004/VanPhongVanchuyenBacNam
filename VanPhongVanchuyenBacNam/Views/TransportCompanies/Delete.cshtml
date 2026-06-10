@@ -1,0 +1,28 @@
+@model VanPhongVanchuyenBacNam.Models.TransportCompany
+
+@{
+    ViewData["Title"] = "Xóa nhà xe";
+}
+
+<h1 class="h3">Xóa nhà xe</h1>
+
+<div class="alert alert-warning">
+    Bạn có chắc muốn xóa nhà xe này? Hành động này <strong>không thể hoàn tác</strong>.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+    <dd class="col-sm-9 fw-semibold">@Model.Name</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Province)</dt>
+    <dd class="col-sm-9">@Model.Province</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PhoneNumber)</dt>
+    <dd class="col-sm-9">@Model.PhoneNumber</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+</form>

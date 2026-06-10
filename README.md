@@ -41,7 +41,7 @@ VanPhongVanchuyenBacNam/
 ## Lộ trình
 
 - [x] Phase 0 — Khởi tạo project, EF Core + LocalDB, layout Bootstrap 5, seed dữ liệu mẫu
-- [ ] Phase 1 — Danh bạ nhà xe: CRUD + tìm kiếm/lọc theo tỉnh & tên
+- [x] Phase 1 — Danh bạ nhà xe: CRUD + tìm kiếm/lọc theo tỉnh & tên
 - [ ] Phase 2 — Vận đơn: CRUD, tự sinh mã vận đơn, chọn nhà xe
 - [ ] Phase 3 — In nhãn dán kiện hàng (barcode + CSS in)
 - [ ] Phase 4 — Trạng thái đơn, tra cứu nhanh, dashboard

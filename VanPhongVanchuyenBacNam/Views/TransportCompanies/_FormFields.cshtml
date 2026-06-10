@@ -1,0 +1,60 @@
+@model VanPhongVanchuyenBacNam.Models.TransportCompany
+
+@* Shared form fields for Create and Edit. The wrapping <form> lives in each page. *@
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="row">
+    <div class="col-md-8 mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Province" class="form-label"></label>
+        <input asp-for="Province" class="form-control" list="provinceSuggestions" placeholder="VD: Nghệ An" />
+        @* datalist = free typing with suggestions from provinces already in the directory. *@
+        <datalist id="provinceSuggestions">
+            @foreach (var province in (List<string>)ViewBag.ProvinceSuggestions)
+            {
+                <option value="@province"></option>
+            }
+        </datalist>
+        <span asp-validation-for="Province" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" placeholder="VD: 0238 383 8383" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="BackupPhone" class="form-label"></label>
+        <input asp-for="BackupPhone" class="form-control" />
+        <span asp-validation-for="BackupPhone" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Address" class="form-label"></label>
+    <input asp-for="Address" class="form-control" placeholder="VD: Bến xe Vinh, Nghệ An" />
+    <span asp-validation-for="Address" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ContactPerson" class="form-label"></label>
+    <input asp-for="ContactPerson" class="form-control" />
+    <span asp-validation-for="ContactPerson" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Note" class="form-label"></label>
+    <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Note" class="text-danger"></span>
+</div>
+
+<div class="form-check mb-3">
+    <input asp-for="IsActive" class="form-check-input" />
+    <label asp-for="IsActive" class="form-check-label"></label>
+</div>
