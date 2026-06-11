@@ -11,14 +11,13 @@
     </div>
     <div class="col-md-4 mb-3">
         <label asp-for="Province" class="form-label"></label>
-        <input asp-for="Province" class="form-control" list="provinceSuggestions" placeholder="VD: Nghệ An" />
-        @* datalist = free typing with suggestions from provinces already in the directory. *@
-        <datalist id="provinceSuggestions">
-            @foreach (var province in (List<string>)ViewBag.ProvinceSuggestions)
+        <select asp-for="Province" class="form-select">
+            <option value="">— Chọn tỉnh/thành —</option>
+            @foreach (var province in (List<string>)ViewBag.ProvinceOptions)
             {
-                <option value="@province"></option>
+                <option value="@province">@province</option>
             }
-        </datalist>
+        </select>
         <span asp-validation-for="Province" class="text-danger"></span>
     </div>
 </div>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VanPhongVanchuyenBacNam.Data;
+using VanPhongVanchuyenBacNam.Helpers;
 using VanPhongVanchuyenBacNam.Models;
 
 namespace VanPhongVanchuyenBacNam.Controllers;
@@ -59,9 +60,9 @@ public class TransportCompaniesController : Controller
     }
 
     // GET: TransportCompanies/Create
-    public async Task<IActionResult> Create()
+    public IActionResult Create()
     {
-        ViewBag.ProvinceSuggestions = await GetProvincesAsync();
+        ViewBag.ProvinceOptions = VietnamProvinces.WithCurrent(null);
         return View();
     }
 
@@ -72,7 +73,7 @@ public class TransportCompaniesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.ProvinceSuggestions = await GetProvincesAsync();
+            ViewBag.ProvinceOptions = VietnamProvinces.WithCurrent(company.Province);
             return View(company);
         }
 
@@ -97,7 +98,7 @@ public class TransportCompaniesController : Controller
             return NotFound();
         }
 
-        ViewBag.ProvinceSuggestions = await GetProvincesAsync();
+        ViewBag.ProvinceOptions = VietnamProvinces.WithCurrent(company.Province);
         return View(company);
     }
 
@@ -113,7 +114,7 @@ public class TransportCompaniesController : Controller
 
         if (!ModelState.IsValid)
         {
-            ViewBag.ProvinceSuggestions = await GetProvincesAsync();
+            ViewBag.ProvinceOptions = VietnamProvinces.WithCurrent(company.Province);
             return View(company);
         }
 
@@ -169,8 +170,7 @@ public class TransportCompaniesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // Distinct provinces from existing data, used for the filter dropdown
-    // and as typing suggestions on the create/edit forms.
+    // Distinct provinces from existing data, used for the list page filter dropdown.
     private Task<List<string>> GetProvincesAsync()
     {
         return _context.TransportCompanies

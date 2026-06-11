@@ -106,7 +106,7 @@ public class ShipmentsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            await LoadFormDataAsync();
+            await LoadFormDataAsync(shipment.RecipientProvince);
             return View(shipment);
         }
 
@@ -150,7 +150,7 @@ public class ShipmentsController : Controller
             return NotFound();
         }
 
-        await LoadFormDataAsync();
+        await LoadFormDataAsync(shipment.RecipientProvince);
         return View(shipment);
     }
 
@@ -166,7 +166,7 @@ public class ShipmentsController : Controller
 
         if (!ModelState.IsValid)
         {
-            await LoadFormDataAsync();
+            await LoadFormDataAsync(form.RecipientProvince);
             return View(form);
         }
 
@@ -287,8 +287,9 @@ public class ShipmentsController : Controller
         return $"{prefix}{next:D4}";
     }
 
-    // Dropdown of active transport companies + province typing suggestions for the form.
-    private async Task LoadFormDataAsync()
+    // Dropdowns for the shipment form: active transport companies,
+    // the 63-province list and saved customers for sender autofill.
+    private async Task LoadFormDataAsync(string? currentProvince = null)
     {
         var companies = await _context.TransportCompanies
             .Where(c => c.IsActive)
@@ -298,12 +299,7 @@ public class ShipmentsController : Controller
             .ToListAsync();
         ViewBag.Companies = new SelectList(companies, "Id", "Label");
 
-        var companyProvinces = _context.TransportCompanies.Select(c => c.Province);
-        var shipmentProvinces = _context.Shipments.Select(s => s.RecipientProvince);
-        ViewBag.ProvinceSuggestions = await companyProvinces
-            .Union(shipmentProvinces)
-            .OrderBy(p => p)
-            .ToListAsync();
+        ViewBag.ProvinceOptions = VietnamProvinces.WithCurrent(currentProvince);
 
         // Saved customers feed the sender autofill dropdown on the create form.
         ViewBag.CustomerList = await _context.Customers
