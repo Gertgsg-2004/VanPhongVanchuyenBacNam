@@ -1,4 +1,7 @@
-# Văn phòng Vận chuyển Bắc Nam
+# Văn phòng Tuấn Hương
+
+> Tên hiển thị của văn phòng đặt tại `Helpers/AppInfo.cs` — đổi tên chỉ cần sửa 1 dòng ở đó.
+> (Tên project/namespace trong code vẫn là `VanPhongVanchuyenBacNam`.)
 
 Web app quản trị cho văn phòng nhận vận chuyển hàng hóa & bưu kiện nội địa Việt Nam:
 danh bạ nhà xe theo tỉnh, quản lý vận đơn và in nhãn dán kiện hàng.

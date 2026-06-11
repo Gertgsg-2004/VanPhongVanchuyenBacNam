@@ -3,7 +3,7 @@
 @* One 100x100mm shipping label. Styled by PrintLabels.cshtml. *@
 <div class="label">
     <div class="label-header">
-        <span class="office-name">VP VẬN CHUYỂN BẮC NAM</span>
+        <span class="office-name">@AppInfo.OfficeName.ToUpper()</span>
         <span>Ngày gửi: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span>
     </div>
 
