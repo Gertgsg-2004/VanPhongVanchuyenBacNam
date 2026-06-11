@@ -30,7 +30,7 @@ public class TransportCompaniesController : Controller
             query = query.Where(c => c.Province == province);
         }
 
-        ViewBag.Provinces = await GetProvincesAsync();
+        ViewBag.Provinces = VietnamProvinces.All.ToList();
         ViewBag.SearchName = searchName;
         ViewBag.SelectedProvince = province;
 
@@ -168,15 +168,5 @@ public class TransportCompaniesController : Controller
         }
 
         return RedirectToAction(nameof(Index));
-    }
-
-    // Distinct provinces from existing data, used for the list page filter dropdown.
-    private Task<List<string>> GetProvincesAsync()
-    {
-        return _context.TransportCompanies
-            .Select(c => c.Province)
-            .Distinct()
-            .OrderBy(p => p)
-            .ToListAsync();
     }
 }
