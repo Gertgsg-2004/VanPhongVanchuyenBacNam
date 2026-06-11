@@ -44,7 +44,11 @@ public class ShipmentsController : Controller
             query = query.Where(s => s.Status == status.Value);
         }
 
-        ViewBag.Provinces = VietnamProvinces.All.ToList();
+        ViewBag.Provinces = await _context.Shipments
+            .Select(s => s.RecipientProvince)
+            .Distinct()
+            .OrderBy(p => p)
+            .ToListAsync();
         ViewBag.SearchTerm = searchTerm;
         ViewBag.SelectedProvince = province;
         ViewBag.SelectedStatus = status;
